@@ -407,7 +407,7 @@ class Bot_3m():
                     a.append(_l)
 
             if cp:
-                if int(p) > 200000:
+                if (int(p) > 200000):
                     l.remove(_l)
             
         return l if rm else a
