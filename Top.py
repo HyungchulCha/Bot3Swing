@@ -92,7 +92,7 @@ top_code = [
 '011070',
 '004370'
 ]
-
+print(len(top_code))
 top_code_filter = b3.get_caution_code_list(top_code, True, True)
 print(top_code_filter)
 print(len(top_code_filter))

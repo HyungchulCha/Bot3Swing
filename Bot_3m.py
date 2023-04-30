@@ -163,21 +163,27 @@ class Bot_3m():
 
     
     def can_i(self, code, df, type):
-        df_c = df[code]
-        ma5 = df_c.rolling(5).mean()
-        ma20 = df_c.rolling(20).mean()
-        ma60 = df_c.rolling(60).mean()
-        df_l = len(df.columns)
-        df.insert(df_l, 'ma5', ma5)
-        df.insert(df_l + 1, 'ma20', ma20)
-        df.insert(df_l + 2, 'ma60', ma60)
-        df['ma5p'] = df['ma5'].shift()
-        df_t = df.tail(1)
+        _df = self.moving_average(df[code])
+        df_t = _df.tail(1)
         if type == 'buy':
             return True if (df_t['ma5'] > df_t['ma5p']) and (df_t['ma5'] > df_t['ma20']) and (df_t['ma5'] > df_t['ma60']) and (df_t['ma20'] > df_t['ma60']) else False
         else:
             return True if (df_t['ma5'] < df_t['ma5p']) and (df_t['ma5'] > df_t['ma20']) and (df_t['ma5'] > df_t['ma60']) and (df_t['ma20'] > df_t['ma60']) else False
 
+
+    def moving_average(self, df):
+        ma5 = df.rolling(5).mean()
+        ma20 = df.rolling(20).mean()
+        ma60 = df.rolling(60).mean()
+        df_l = len(df.columns.to_list())
+        df.insert(df_l, 'ma5', ma5)
+        df.insert(df_l + 1, 'ma20', ma20)
+        df.insert(df_l + 2, 'ma60', ma60)
+        df['ma5p'] = df['ma5'].shift()
+        df['ma20p'] = df['ma20'].shift()
+        df['ma60p'] = df['ma60'].shift()
+        return df
+    
     
     def get_min_df(self, code, to, min):
 
@@ -380,12 +386,69 @@ class Bot_3m():
                             'q': q,
                             'p': p,
                             'a': a,
+                            'max': p,
+                            'dif': p/a,
+                            'sel': 1,
                             'ptp': float(a) * int(q),
                             'ctp': float(p) * int(q)
                         }
                     else:
                         a.append(i['pdno'])
         return o if obj else a
+    
+
+    def sell_condition(self, bal_obj, code):
+
+        t1 = 0.01
+        t2 = 0.02
+        t3 = 0.05
+        c = 0.96
+
+        if os.path.isdir(FILE_URL_BALANCE_LIST_3M):
+
+            obj = self.load_file(FILE_URL_BALANCE_LIST_3M)
+
+            for o in obj:
+                if not (o in bal_obj):
+                    obj.pop(o, None)
+
+            obj[code]['max'] = obj[code]['max'] if obj[code]['max'] > bal_obj[code]['p'] else bal_obj[code]['p']
+            
+            if bal_obj[code]['dif'] > 1:
+
+                pft_max = float(obj[code]['max']) / float(obj[code]['a'])
+                pft_dif = pft_max - bal_obj[code]['dif']
+                if (t1 <= pft_dif < t1 + 0.01) and (obj[code]['sel'] == 1):
+
+                    # sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
+                    # _ror = self.ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
+
+                    # if sel_r['rt_cd'] == '0':
+                    #     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
+                    #     sel_lst.append({'c': '[S] ' + code, 'r': round(_ror, 4)})
+
+                    # else:
+                    #     msg = sel_r['msg1']
+                    #     print(f'{msg}')
+
+                    print('1차매도')
+                    obj[code]['sel'] += 1
+                elif (t2 <= pft_dif < t2 + 0.01) and (obj[code]['sel'] == 2):
+                    print('2차매도')
+                    obj[code]['sel'] += 1
+                elif (t3 <= pft_dif) and (obj[code]['sel'] == 3):
+                    print('3차매도')
+                    obj[code]['sel'] += 1
+
+            elif bal_obj[code]['dif'] <= c:
+                print('손절')
+
+        else:
+            obj = bal_obj
+
+        self.save_file(FILE_URL_BALANCE_LIST_3M, obj)
+
+        return obj
     
     
     def get_guant_code_list(self):
@@ -405,7 +468,6 @@ class Bot_3m():
                     l.remove(_l)
                 else:
                     a.append(_l)
-
             if cp:
                 if (int(p) > 200000):
                     l.remove(_l)
