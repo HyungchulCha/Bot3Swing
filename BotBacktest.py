@@ -52,40 +52,31 @@ for x in np.nditer(xlsx_list):
 
         for i, row in temp_df.iterrows():
             
-            # if (row['ma5'] > row['ma5p']) and (row['ma5'] > row['ma20']) and (row['ma5'] >= row['ma60']) and (row['ma20'] < row['ma60']) and has_buy == False:
-            # if (row['ma5'] > row['ma5p']) and (row['ma5'] > row['ma20']) and (row['ma5'] >= row['ma60']) and (row['ma20'] < row['ma60']) and (row['ma5p'] <= row['ma20p']) and (row['ma5p'] < row['ma60p']) and (row['ma20p'] < row['ma60p']) and has_buy == False:
-            # if (row['ma5'] > row['ma5p']) and (row['ma5'] > row['ma20']) and (row['ma5'] <= row['ma60']) and (row['ma20'] < row['ma60']) and (row['ma5p'] <= row['ma20p']) and (row['ma5p'] <= row['ma60p']) and (row['ma20p'] < row['ma60p']) and has_buy == False:
-            if (row['ma5'] > row['ma5p'])\
-            and (row['ma20'] > row['ma20p'])\
-            and (row['ma60'] > row['ma60p'])\
-            and (row['ma5p'] < row['ma20p'])\
-            and (row['ma5'] >= row['ma20'])\
-            and (row['ma5'] > row['ma60'])\
-            and (row['ma20'] > row['ma60'])\
-            and has_buy == False\
+            # buy 1
+            if \
+            (row['ma5'] >= row['ma20']) and \
+            (row['ma5p'] < row['ma20p']) and \
+            has_buy == False\
             :
+            # buy 2
+            # if \
+            # (row['ma5'] > row['ma5p']) and \
+            # (row['ma5'] >= row['ma20']) and \
+            # (row['ma5'] < row['ma60']) and \
+            # (row['ma20'] > row['ma60']) and \
+            # has_buy == False\
+            # :
                 buy_p = buy_p + row['close']
                 has_buy = True
                 buy_c += 1
                 item_buy_c += 1
 
-            if (row['ma5'] <= row['ma5p']) and (row['ma5'] > row['ma20']) and (row['ma5'] > row['ma60']) and (row['ma20'] > row['ma60']) and has_buy == True:
-                if buy_c > 0:
-                    if buy_p * 0.98 > row['close'] * buy_c:
-                        sel_close = row['close'] * buy_c
-                        has_buy = False
-                        _ror = B3.ror(buy_p, sel_close, _ror)
-                        if sel_close - buy_p > 0:
-                            sucs_c += 1
-                        else:
-                            fail_c += 1
-                        item_sel_c += 1
-                        buy_p = 0
-                        buy_c = 0
-            # 73 #?288
-            if (row['ma5'] < row['ma5p']) and (row['ma5'] <= row['ma20']) and (row['ma5'] > row['ma60']) and (row['ma20'] > row['ma60']) and has_buy == True:
-                if buy_c > 0:
-                    sel_close = row['close'] * buy_c
+            # cut 1
+            if \
+            has_buy == True\
+            :
+                if buy_p * 0.96 > row['close']:
+                    sel_close = row['close']
                     has_buy = False
                     _ror = B3.ror(buy_p, sel_close, _ror)
                     if sel_close - buy_p > 0:
@@ -95,6 +86,25 @@ for x in np.nditer(xlsx_list):
                     item_sel_c += 1
                     buy_p = 0
                     buy_c = 0
+
+            # self 1
+            if \
+            (row['ma5'] < row['ma5p']) and \
+            (row['ma5'] <= row['ma20']) and \
+            (row['ma5'] > row['ma60']) and \
+            (row['ma20'] > row['ma60']) and \
+            has_buy == True\
+            :
+                sel_close = row['close']
+                has_buy = False
+                _ror = B3.ror(buy_p, sel_close, _ror)
+                if sel_close - buy_p > 0:
+                    sucs_c += 1
+                else:
+                    fail_c += 1
+                item_sel_c += 1
+                buy_p = 0
+                buy_c = 0
 
         if sucs_c != 0:
             sucs_per = round(((sucs_c * 100) / (sucs_c + fail_c)), 2)

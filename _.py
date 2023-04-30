@@ -2,6 +2,9 @@ from Bot_3m import *
 
 b3 = Bot_3m()
 kp = b3.bkk.fetch_kospi_symbols()
+print(kp.columns.to_list())
+print(kp['지수업종대분류'].to_list())
+print(kp['지수업종중분류'].to_list())
 kd = b3.bkk.fetch_kosdaq_symbols()
 kp = kp.loc[(kp['그룹코드'] == 'ST') 
         & (kp['시가총액규모'] != 0) 
