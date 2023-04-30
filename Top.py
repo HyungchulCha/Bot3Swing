@@ -1,3 +1,5 @@
+from Bot_3m import *
+b3 = Bot_3m()
 top_code = [
 '001740',
 '008560',
@@ -90,3 +92,7 @@ top_code = [
 '011070',
 '004370'
 ]
+
+top_code_filter = b3.get_caution_code_list(top_code, True, True)
+print(top_code_filter)
+print(len(top_code_filter))

@@ -394,15 +394,21 @@ class Bot_3m():
         return l
     
 
-    def get_caution_code_list(self, l, rm=False):
+    def get_caution_code_list(self, l, rm=False, cp=False):
         a = []
         for _l in l:
-            r = self.bkk.fetch_price(_l)['output']['iscd_stat_cls_code']
-            if (r == '51') or (r == '52') or (r == '53') or (r == '54') or (r == '58') or (r == '59'):
+            r = self.bkk.fetch_price(_l)['output']
+            c = r['iscd_stat_cls_code']
+            p = r['stck_prpr']
+            if (c == '51') or (c == '52') or (c == '53') or (c == '54') or (c == '58') or (c == '59'):
                 if rm:
                     l.remove(_l)
                 else:
                     a.append(_l)
+
+            if cp:
+                if int(p) > 200000:
+                    l.remove(_l)
             
         return l if rm else a
     
