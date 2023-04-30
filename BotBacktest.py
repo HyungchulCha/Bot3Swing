@@ -53,9 +53,14 @@ for x in np.nditer(xlsx_list):
         for i, row in temp_df.iterrows():
             
             # buy 1
+            # if \
+            # (row['ma5'] >= row['ma20']) and \
+            # (row['ma5p'] < row['ma20p']) and \
+            # has_buy == False\
+            # :
+            # buy 3
             if \
-            (row['ma5'] >= row['ma20']) and \
-            (row['ma5p'] < row['ma20p']) and \
+            (row['ma5'] >= row['ma5p']) and \
             has_buy == False\
             :
             # buy 2
@@ -88,6 +93,14 @@ for x in np.nditer(xlsx_list):
                     buy_c = 0
 
             # self 1
+            # if \
+            # (row['ma5'] < row['ma5p']) and \
+            # (row['ma5'] <= row['ma20']) and \
+            # (row['ma5'] > row['ma60']) and \
+            # (row['ma20'] > row['ma60']) and \
+            # has_buy == True\
+            # :
+            # self 2
             if \
             (row['ma5'] < row['ma5p']) and \
             (row['ma5'] <= row['ma20']) and \
