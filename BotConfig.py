@@ -17,12 +17,9 @@ KI_APPSECRET_IMITATION = 'FfxV9JO+iOSy+OiwyPl3Yh+UM7koPNcv0z6X6omA7w+0CCz7WSUtcM
 LINE_URL = 'https://notify-api.line.me/api/notify'
 LINE_TOKEN = '48zl8RmuB0lZoPOoVmqowZzjsUE0P53JO7jfVFCyLwh'
 
-FILE_URL = DIRECTORY + '/_data'
-FILE_URL_BACK = DIRECTORY + '/_back_3m/'
+FILE_URL = DIRECTORY + '/Data'
 FILE_URL_BACKTEST = DIRECTORY + '/BacktestResult/'
-FILE_URL_QUANT_TOTAL = FILE_URL + '/QuantData.xlsx'
 FILE_URL_DATA_3M = FILE_URL + '/BotData_3m.xlsx'
-FILE_URL_DATA_BACK_3M = FILE_URL + '/BotData_3m_backup.xlsx'
 FILE_URL_QUANT_LIST_3M = FILE_URL + '/QuantDataList_3m.pickle'
 FILE_URL_QUANT_RANK_3M = FILE_URL + '/QuantDataRank_3m.xlsx'
 FILE_URL_QUANT_LAST_3M = FILE_URL + '/QuantLast_3m.pickle'
