@@ -2,12 +2,8 @@ from BotConfig import *
 from BotUtil import *
 from BotKIKr import BotKIKr
 import pandas as pd
-import numpy as np
-import pickle
-import requests
 import datetime
 import threading
-import math
 import os
 
 class Bot3Swing():
@@ -84,8 +80,12 @@ class Bot3Swing():
         for code in self.b_l:
 
             min_lst = self.bkk.fetch_today_1m_ohlcv(code, tn_df_req, True)['output2'][:3]
-            cur_prc = min_lst[0]['stck_prpr']
-            self.bdf.at[tn_df_idx, code] = cur_prc
+            chk_cls = min_lst[0]['stck_prpr']
+            chk_opn = min_lst[2]['stck_oprc']
+            chk_hig = max([int(min_lst[i]['stck_hgpr']) for i in range(3)])
+            chk_low = min([int(min_lst[i]['stck_lwpr']) for i in range(3)])
+            chk_vol = sum([int(min_lst[i]['cntg_vol']) for i in range(3)])
+            self.bdf.at[tn_df_idx, code] = str(chk_opn) + '|' + str(chk_hig) + '|' + str(chk_low) + '|' + str(chk_cls) + '|' + str(chk_vol)
 
             is_late = tn_div == 2
 
@@ -98,7 +98,7 @@ class Bot3Swing():
                 
                 if is_buy and (not is_alread) and (not is_remain):
                     
-                    ord_q = get_qty(int(cur_prc), self.buy_max_price)
+                    ord_q = get_qty(int(chk_cls), self.buy_max_price)
                     buy_r = self.bkk.create_market_buy_order(code, ord_q) if tn < tn_153000 else self.bkk.create_over_buy_order(code, ord_q)
 
                     if buy_r['rt_cd'] == '0':
@@ -170,9 +170,9 @@ class Bot3Swing():
 
     def sell_condition(self, bal_obj, code):
 
-        t1 = 0.02
+        t1 = 0.01
         t2 = 0.02
-        t3 = 0.05
+        t3 = 0.03
         ct = 0.96
 
         if os.path.isdir(FILE_URL_BALANCE_LIST_3M):
@@ -182,38 +182,65 @@ class Bot3Swing():
             for o in obj:
                 if not (o in bal_obj):
                     obj.pop(o, None)
-
+            # 상승
             if obj[code]['max'] < bal_obj[code]['p']:
                 obj[code]['max'] = bal_obj[code]['p']
-            
-            if bal_obj[code]['pft'] > 1:
 
-                pft_max = float(obj[code]['max']) / float(obj[code]['a'])
-                pft_dif = pft_max - bal_obj[code]['pft']
-                if (t1 <= pft_dif < t1 + 0.01) and (obj[code]['sel'] == 1):
+            # 하락
+            if obj[code]['max'] > bal_obj[code]['p']:
 
-                    # sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
-                    # _ror = self.ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
+                # 이익
+                if bal_obj[code]['pft'] > 1:
 
-                    # if sel_r['rt_cd'] == '0':
-                    #     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
-                    #     sel_lst.append({'c': '[S] ' + code, 'r': round(_ror, 4)})
+                    pft_max = float(obj[code]['max']) / float(obj[code]['a'])
+                    los_dif = pft_max - bal_obj[code]['pft']
 
-                    # else:
-                    #     msg = sel_r['msg1']
-                    #     print(f'{msg}')
+                    if obj[code]['sel'] == 1:
+                        if t1 <= los_dif:
+                            # sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
+                            # _ror = self.ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
 
-                    print('1차매도')
-                    obj[code]['sel'] += 1
-                elif (t2 <= pft_dif < t2 + 0.01) and (obj[code]['sel'] == 2):
-                    print('2차매도')
-                    obj[code]['sel'] += 1
-                elif (t3 <= pft_dif) and (obj[code]['sel'] == 3):
-                    print('3차매도')
-                    obj[code]['sel'] += 1
+                            # if sel_r['rt_cd'] == '0':
+                            #     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
+                            #     sel_lst.append({'c': '[S] ' + code, 'r': round(_ror, 4)})
 
-            elif ct >= bal_obj[code]['pft']:
-                print('손절')
+                            # else:
+                            #     msg = sel_r['msg1']
+                            #     print(f'{msg}')
+                            print('1차매도 : 0.2')
+                            obj[code]['sel'] += 1
+                    elif obj[code]['sel'] == 2:
+                        if t2 <= los_dif:
+                            # sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
+                            # _ror = self.ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
+
+                            # if sel_r['rt_cd'] == '0':
+                            #     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
+                            #     sel_lst.append({'c': '[S] ' + code, 'r': round(_ror, 4)})
+
+                            # else:
+                            #     msg = sel_r['msg1']
+                            #     print(f'{msg}')
+                            print('2차매도 : 0.3')
+                            obj[code]['sel'] += 1
+                    elif obj[code]['sel'] == 3:
+                        if t3 <= los_dif:
+                            # sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
+                            # _ror = self.ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
+
+                            # if sel_r['rt_cd'] == '0':
+                            #     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
+                            #     sel_lst.append({'c': '[S] ' + code, 'r': round(_ror, 4)})
+
+                            # else:
+                            #     msg = sel_r['msg1']
+                            #     print(f'{msg}')
+                            print('3차매도 : 0.5')
+                            obj[code]['sel'] += 1
+
+                # 손절
+                elif bal_obj[code]['pft'] <= ct:
+                    print('손절')
 
         else:
             obj = bal_obj
@@ -323,52 +350,49 @@ if __name__ == '__main__':
     B3 = Bot3Swing()
     # B3.market_to_excel(True)
     # B3.deadline_to_excel()
-    B3.init_per_day()
-    df_close = get_code_df(B3.bdf, '059100')
-    min_max_height(moving_average(df_close))
 
-    # while True:
+    while True:
 
-    #     try:
+        try:
 
-    #         t_n = datetime.datetime.now()
-    #         t_085000 = t_n.replace(hour=8, minute=50, second=0)
-    #         t_090300 = t_n.replace(hour=9, minute=3, second=0)
-    #         t_152500 = t_n.replace(hour=15, minute=25, second=0)
-    #         t_153000 = t_n.replace(hour=15, minute=30, second=0)
-    #         t_160000 = t_n.replace(hour=16, minute=00, second=0)
+            t_n = datetime.datetime.now()
+            t_085000 = t_n.replace(hour=8, minute=50, second=0)
+            t_090300 = t_n.replace(hour=9, minute=3, second=0)
+            t_152500 = t_n.replace(hour=15, minute=25, second=0)
+            t_153000 = t_n.replace(hour=15, minute=30, second=0)
+            t_160000 = t_n.replace(hour=16, minute=00, second=0)
 
-    #         if t_n >= t_085000 and t_n <= t_153000 and B3.bool_marketday == False:
-    #             if os.path.isfile(os.getcwd() + '/token.dat'):
-    #                 os.remove('token.dat')
-    #             B3.init_per_day()
-    #             B3.bool_marketday = True
-    #             B3.bool_marketday_end = False
+            if t_n >= t_085000 and t_n <= t_153000 and B3.bool_marketday == False:
+                if os.path.isfile(os.getcwd() + '/token.dat'):
+                    os.remove('token.dat')
+                B3.init_per_day()
+                B3.bool_marketday = True
+                B3.bool_marketday_end = False
 
-    #             line_message(f'Stock Start' if B3.init_marketday == 'Y' else 'Holiday Start')
+                line_message(f'Stock Start' if B3.init_marketday == 'Y' else 'Holiday Start')
 
-    #         if B3.init_marketday == 'Y':
+            if B3.init_marketday == 'Y':
 
-    #             if t_n > t_152500 and t_n < t_153000 and B3.bool_stockorder_timer == False:
-    #                 B3.bool_stockorder_timer = True
+                if t_n > t_152500 and t_n < t_153000 and B3.bool_stockorder_timer == False:
+                    B3.bool_stockorder_timer = True
 
-    #             if t_n >= t_090300 and t_n <= t_153000 and B3.bool_stockorder == False:
-    #                 B3.stock_order()
-    #                 B3.bool_stockorder = True
+                if t_n >= t_090300 and t_n <= t_153000 and B3.bool_stockorder == False:
+                    B3.stock_order()
+                    B3.bool_stockorder = True
 
-    #         if t_n == t_160000 and B3.bool_marketday_end == False:
+            if t_n == t_160000 and B3.bool_marketday_end == False:
 
-    #             if B3.init_marketday == 'Y':
-    #                 B3.deadline_to_excel()
-    #                 B3.bool_stockorder_timer = False
-    #                 B3.bool_stockorder = False
+                if B3.init_marketday == 'Y':
+                    B3.deadline_to_excel()
+                    B3.bool_stockorder_timer = False
+                    B3.bool_stockorder = False
 
-    #             B3.bool_marketday = False
-    #             B3.bool_marketday_end = True
+                B3.bool_marketday = False
+                B3.bool_marketday_end = True
 
-    #             line_message(f'Stock End' if B3.init_marketday == 'Y' else 'Holiday End')
+                line_message(f'Stock End' if B3.init_marketday == 'Y' else 'Holiday End')
 
-    #     except Exception as e:
+        except Exception as e:
 
-    #         line_message(f"Bot3 Error : {e}")
-    #         break
+            line_message(f"Bot3 Error : {e}")
+            break
