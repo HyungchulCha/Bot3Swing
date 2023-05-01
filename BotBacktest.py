@@ -1,9 +1,9 @@
-from Bot3Swing import *
 from BotConfig import *
 from BotUtil import *
 import pandas as pd
 import numpy as np
 import os
+import datetime
 
 '''
 해결 - 방금전봉보다 5프로 이하
@@ -13,10 +13,8 @@ import os
 해결 - 지금종가가 5이평 위에 있냐
 '''
 
-B3 = Bot3Swing()
-
 dir = os.getcwd()
-flist = os.listdir(dir + '/_back_3m')
+flist = os.listdir(dir + '/BacktestData')
 xlsx_list = np.array([x for x in flist if x.endswith('.xlsx')])
 
 ttl_code_array = []
@@ -34,7 +32,7 @@ if os.path.isfile(FILE_URL_BALANCE_LIST_TEST_3M):
 
 for x in np.nditer(xlsx_list):
     code = str(x).split('.')[0]
-    _code_df = pd.read_excel(dir + '/_back_3m/' + str(x))
+    _code_df = pd.read_excel(dir + '/BacktestData/' + str(x))
     _code_df = _code_df[::-1]
 
     code_df = pd.DataFrame({'open': _code_df['시가'].abs().to_list(), 'high': _code_df['고가'].abs().to_list(), 'low': _code_df['저가'].abs().to_list(), 'close': _code_df['현재가'].abs().to_list(), 'vol': _code_df['거래량'].abs().to_list()})
@@ -209,4 +207,4 @@ for x in np.nditer(xlsx_list):
     
 prft_df = pd.DataFrame({'code': ttl_code_array, 'buy': ttl_buy_array, 'sell': ttl_sel_array, 'success': ttl_sucs_per_array, 'fail': ttl_fail_per_array, 'profit': ttl_prft_array})
 prft_df = prft_df.sort_values('profit', ascending=False)
-prft_df.to_excel(dir + '/_back_result/Bot3mBacktest' + datetime.datetime.now().strftime('%m%d%H%M%S') + '.xlsx')
+prft_df.to_excel(dir + '/BacktestResult/Bot3mBacktest' + datetime.datetime.now().strftime('%m%d%H%M%S') + '.xlsx')
