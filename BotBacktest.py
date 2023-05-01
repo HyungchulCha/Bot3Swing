@@ -1,11 +1,11 @@
-from Bot_3m import *
+from Bot3Swing import *
 from BotConfig import *
 import pandas as pd
 import numpy as np
 import os
 
 kosdaq = []
-B3 = Bot_3m()
+B3 = Bot3Swing()
 
 dir = os.getcwd()
 flist = os.listdir(dir + '/_back_3m')

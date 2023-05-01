@@ -305,6 +305,132 @@ class BotKIKr:
         resp = requests.get(url, headers=headers, params=params)
         return resp.json()
     
+    def get_caution_code_list(self, l, rm=False):
+        a = []
+        for _l in l:
+            r = self.fetch_price(_l)['output']
+            c = r['iscd_stat_cls_code']
+            if (c == '51') or (c == '52') or (c == '53') or (c == '54') or (c == '58') or (c == '59'):
+                if rm:
+                    l.remove(_l)
+                else:
+                    a.append(_l)
+            
+        return l if rm else a
+    
+    def filter_code_list(self):
+        kp = self.fetch_kospi_symbols()
+        kd = self.fetch_kosdaq_symbols()
+        kp = kp.loc[(kp['그룹코드'] == 'ST') 
+                & (kp['시가총액규모'] != 0) 
+                & (kp['시가총액'] != 0) 
+                & (kp['우선주'] == 0) 
+                & (kp['단기과열'] == 0) 
+                & (kp['락구분'] == 0)
+                & (kp['액면변경'] == 0) 
+                & (kp['증자구분'] == 0)
+                & (kp['ETP'] != 'Y') 
+                & (kp['SRI'] != 'Y') 
+                & (kp['ELW발행'] != 'Y') 
+                & (kp['KRX은행'] != 'Y') 
+                & (kp['KRX증권'] != 'Y')
+                & (kp['KRX섹터_보험'] != 'Y')
+                & (kp['SPAC'] != 'Y') 
+                & (kp['저유동성'] != 'Y') 
+                & (kp['거래정지'] != 'Y') 
+                & (kp['정리매매'] != 'Y') 
+                & (kp['관리종목'] != 'Y') 
+                & (kp['시장경고'] != 'Y') 
+                & (kp['경고예고'] != 'Y') 
+                & (kp['불성실공시'] != 'Y') 
+                & (kp['우회상장'] != 'Y') 
+                & (kp['공매도과열'] != 'Y') 
+                & (kp['이상급등'] != 'Y') 
+                & (kp['회사신용한도초과'] != 'Y') 
+                & (kp['담보대출가능'] != 'Y') 
+                & (kp['대주가능'] != 'Y') 
+                & (kp['신용가능'] == 'Y')
+                & (kp['증거금비율'] != 100)
+                & (kp['기준가'] > 1000) 
+                & (kp['전일거래량'] > 300000) 
+                ]
+        kd = kd.loc[(kd['그룹코드'] == 'ST') 
+                & (kd['시가총액규모'] != 0) 
+                & (kd['시가총액'] != 0) 
+                & (kd['우선주'] == 0) 
+                & (kd['단기과열'] == 0) 
+                & (kd['락구분'] == 0)
+                & (kd['액면변경'] == 0) 
+                & (kd['증자구분'] == 0)
+                & (kd['ETP'] != 'Y') 
+                & (kd['KRX은행'] != 'Y') 
+                & (kd['KRX증권'] != 'Y')
+                & (kd['KRX섹터_보험'] != 'Y')
+                & (kd['SPAC'] != 'Y') 
+                & (kd['투자주의'] != 'Y') 
+                & (kd['거래정지'] != 'Y') 
+                & (kd['정리매매'] != 'Y') 
+                & (kd['관리종목'] != 'Y') 
+                & (kd['시장경고'] != 'Y') 
+                & (kd['경고예고'] != 'Y') 
+                & (kd['불성실공시'] != 'Y') 
+                & (kd['우회상장'] != 'Y') 
+                & (kd['공매도과열'] != 'Y') 
+                & (kd['이상급등'] != 'Y') 
+                & (kd['회사신용한도초과'] != 'Y') 
+                & (kd['담보대출가능'] != 'Y') 
+                & (kd['대주가능'] != 'Y') 
+                & (kd['신용가능'] == 'Y')
+                & (kd['증거금비율'] != 100)
+                & (kp['기준가'] > 1000) 
+                & (kp['전일거래량'] > 300000) 
+                ]
+        _code_list = kp['단축코드'].to_list() + kd['단축코드'].to_list()
+        code_list = self.get_caution_code_list(_code_list, True)
+
+        return code_list
+    
+    def df_today_1m_ohlcv(self, code, to, _min):
+        df = None
+        a_d = []
+        a_c = []
+
+        min_lst = self.fetch_today_1m_ohlcv(code, to)['output2']
+        min_cnt = _min - 1
+
+        for i, m in enumerate(min_lst):
+            min_div = int(m['stck_cntg_hour'][2:4]) % _min
+            # ohlcv
+            # stck_oprc stck_hgpr stck_lwpr stck_prpr cntg_vol
+            if m['stck_cntg_hour'] != '153000' and min_div == min_cnt:
+                opn = min_lst[i + min_cnt]['stck_oprc']
+                chk_hig = max([int(min_lst[i + j]['stck_hgpr']) for j in range(_min)])
+                chk_low = min([int(min_lst[i + j]['stck_lwpr']) for j in range(_min)])
+                sum_vol = sum([int(min_lst[i + j]['cntg_vol']) for j in range(_min)])
+                a_c.append(str(opn) + '|' + str(chk_hig) + '|' + str(chk_low) + '|' + m['stck_prpr'] + '|' + str(sum_vol))
+            else:
+                a_c.append((m['stck_oprc'] + '|' + m['stck_hgpr'] + '|' + m['stck_lwpr'] + '|' + m['stck_prpr'] + '|' + m['cntg_vol']))
+            a_d.append(str(m['stck_bsop_date'] + m['stck_cntg_hour']))
+
+        df = pd.DataFrame({'date': a_d, code: a_c})
+        df = df.set_index('date')
+
+        n_s = 0
+        if _min == 3:
+            n_s = 10
+        elif _min == 5 or _min == 10:
+            n_s = 11
+        elif _min == 15:
+            n_s = 16
+            
+        if to == '153000':
+            df_h = df.head(1)
+            df_b = df.iloc[n_s::_min, :]
+            df = pd.concat([df_h, df_b])[::-1]
+        else:
+            df = df.iloc[::_min, :][::-1]
+        return df
+    
     def fetch_today_1m_ohlcv(self, symbol: str, to: str, once=False):
         o = {}
         _o = self._fetch_today_1m_ohlcv(symbol, to)

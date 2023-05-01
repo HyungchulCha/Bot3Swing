@@ -1,4 +1,4 @@
-from Bot_3m import *
+from Bot3Swing import *
 from BotConfig import *
 from pykiwoom.kiwoom import *
 import pandas as pd
@@ -7,7 +7,7 @@ import time
 import pickle
 import os
 
-B3 = Bot_3m()
+B3 = Bot3Swing()
 kp = B3.bkk.fetch_kospi_symbols()
 kp = kp.loc[(kp['그룹코드'] == 'ST') 
         & (kp['시가총액규모'] != 0) 
