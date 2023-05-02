@@ -79,13 +79,11 @@ class Bot3Swing():
         bal_lst = self.get_balance_code_list(True)
         sel_lst = []
 
-        if os.path.isfile(FILE_URL_BALANCE_LIST_3M):
-            obj_lst = load_file(FILE_URL_BALANCE_LIST_3M)
-            print('Loaded!!!')
+        if os.path.isfile(FILE_URL_BLNC_3M):
+            obj_lst = load_file(FILE_URL_BLNC_3M)
         else:
             obj_lst = {}
-            save_file(FILE_URL_BALANCE_LIST_3M, obj_lst)
-            print('Saved!!!')
+            save_file(FILE_URL_BLNC_3M, obj_lst)
 
         for code in self.b_l:
 
@@ -161,10 +159,10 @@ class Bot3Swing():
                                     msg = sel_r['msg1']
                                     print(f'{msg}')
 
-                                prev_sel = copy.deepcopy(obj_lst[code]['sel'])
-                                obj_lst[code]['sel'] = prev_sel + 1
+                                prev_sel = copy.deepcopy(obj_lst[code]['s'])
+                                obj_lst[code]['s'] = prev_sel + 1
                             
-                            elif (obj_lst[code]['sel'] == 2) and (t2 <= los_dif):
+                            elif (obj_lst[code]['s'] == 2) and (t2 <= los_dif):
 
                                 ord_qty = int(bal_lst[code]['q'] * (3/8)) if int(bal_lst[code]['q'] * (3/8)) != 0 else 1
                                 sel_r = self.bkk.create_market_sell_order(code, ord_qty) if tn < tn_153000 else self.bkk.create_over_sell_order(code, ord_qty)
@@ -177,10 +175,10 @@ class Bot3Swing():
                                     msg = sel_r['msg1']
                                     print(f'{msg}')
 
-                                prev_sel = copy.deepcopy(obj_lst[code]['sel'])
-                                obj_lst[code]['sel'] = prev_sel + 1
+                                prev_sel = copy.deepcopy(obj_lst[code]['s'])
+                                obj_lst[code]['s'] = prev_sel + 1
 
-                            elif (obj_lst[code]['sel'] == 3) and (t3 <= los_dif):
+                            elif (obj_lst[code]['s'] == 3) and (t3 <= los_dif):
                                     
                                 sel_r = self.bkk.create_market_sell_order(code, bal_lst[code]['q']) if tn < tn_153000 else self.bkk.create_over_sell_order(code, bal_lst[code]['q'])
                                 _ror = ror(bal_lst[code]['ptp'], bal_lst[code]['ctp'])
@@ -222,7 +220,7 @@ class Bot3Swing():
 
                             obj_lst.pop(code, None)
 
-        save_file(FILE_URL_BALANCE_LIST_3M, obj_lst)
+        save_file(FILE_URL_BLNC_3M, obj_lst)
 
         sel_txt = ''
         for sl in sel_lst:
@@ -316,7 +314,7 @@ class Bot3Swing():
 
     
     def deadline_to_excel(self):
-        save_file(FILE_URL_QUANT_LAST_3M, self.bkk.filter_code_list())
+        save_file(FILE_URL_SMBL_3M, self.bkk.filter_code_list())
         self.market_to_excel(True)
 
     
@@ -350,7 +348,7 @@ class Bot3Swing():
     
     
     def get_guant_code_list(self):
-        _l = load_file(FILE_URL_QUANT_LAST_3M)
+        _l = load_file(FILE_URL_SMBL_3M)
         l = [str(int(i)).zfill(6) for i in _l]
         return l
 
@@ -360,6 +358,8 @@ if __name__ == '__main__':
     B3 = Bot3Swing()
     # 일주일에 한번
     # B3.deadline_to_excel()
+    if os.path.isfile(FILE_URL_BLNC_3M):
+        os.remove(FILE_URL_BLNC_3M)
     B3.market_to_excel()
 
     while True:
