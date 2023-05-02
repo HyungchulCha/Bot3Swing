@@ -390,7 +390,7 @@ if __name__ == '__main__':
                 B3.bool_marketday = True
                 B3.bool_marketday_end = False
 
-                line_message(f'Stock Start' if B3.init_marketday == 'Y' else 'Holiday Start')
+                line_message(f'Bot3Swing Stock Start' if B3.init_marketday == 'Y' else 'Bot3Swing Holiday Start')
 
             if B3.init_marketday == 'Y':
 
@@ -414,9 +414,9 @@ if __name__ == '__main__':
                 B3.bool_marketday = False
                 B3.bool_marketday_end = True
 
-                line_message(f'Stock End' if B3.init_marketday == 'Y' else 'Holiday End')
+                line_message(f'Bot3Swing Stock End' if B3.init_marketday == 'Y' else 'Bot3Swing Holiday End')
 
         except Exception as e:
 
-            line_message(f"Bot3 Error : {e}")
+            line_message(f"Bot3Swing Error : {e}")
             break
