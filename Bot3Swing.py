@@ -370,53 +370,53 @@ if __name__ == '__main__':
     B3 = Bot3Swing()
     # 일주일에 한번
     # B3.deadline_to_excel()
-    # B3.market_to_excel()
+    # B3.market_to_excel(True)
 
-    # while True:
+    while True:
 
-    #     try:
+        try:
 
-    #         t_n = datetime.datetime.now()
-    #         t_085000 = t_n.replace(hour=8, minute=50, second=0)
-    #         t_090300 = t_n.replace(hour=9, minute=3, second=0)
-    #         t_152500 = t_n.replace(hour=15, minute=25, second=0)
-    #         t_153000 = t_n.replace(hour=15, minute=30, second=0)
-    #         t_160000 = t_n.replace(hour=16, minute=00, second=0)
+            t_n = datetime.datetime.now()
+            t_085000 = t_n.replace(hour=8, minute=50, second=0)
+            t_090300 = t_n.replace(hour=9, minute=3, second=0)
+            t_152500 = t_n.replace(hour=15, minute=25, second=0)
+            t_153000 = t_n.replace(hour=15, minute=30, second=0)
+            t_160000 = t_n.replace(hour=16, minute=00, second=0)
 
-    #         if t_n >= t_085000 and t_n <= t_153000 and B3.bool_marketday == False:
-    #             if os.path.isfile(os.getcwd() + '/token.dat'):
-    #                 os.remove('token.dat')
-    #             B3.init_per_day()
-    #             B3.bool_marketday = True
-    #             B3.bool_marketday_end = False
+            if t_n >= t_085000 and t_n <= t_153000 and B3.bool_marketday == False:
+                if os.path.isfile(os.getcwd() + '/token.dat'):
+                    os.remove('token.dat')
+                B3.init_per_day()
+                B3.bool_marketday = True
+                B3.bool_marketday_end = False
 
-    #             line_message(f'Stock Start' if B3.init_marketday == 'Y' else 'Holiday Start')
+                line_message(f'Stock Start' if B3.init_marketday == 'Y' else 'Holiday Start')
 
-    #         if B3.init_marketday == 'Y':
+            if B3.init_marketday == 'Y':
 
-    #             if t_n > t_152500 and t_n < t_153000 and B3.bool_stockorder_timer == False:
-    #                 B3.bool_stockorder_timer = True
+                if t_n > t_152500 and t_n < t_153000 and B3.bool_stockorder_timer == False:
+                    B3.bool_stockorder_timer = True
 
-    #             if t_n >= t_090300 and t_n <= t_153000 and B3.bool_stockorder == False:
-    #                 B3.stock_order()
-    #                 B3.bool_stockorder = True
+                if t_n >= t_090300 and t_n <= t_153000 and B3.bool_stockorder == False:
+                    B3.stock_order()
+                    B3.bool_stockorder = True
 
-    #         if t_n == t_160000 and B3.bool_marketday_end == False:
+            if t_n == t_160000 and B3.bool_marketday_end == False:
 
-    #             if B3.init_marketday == 'Y':
-    #                 B3.market_to_excel()
-    #                 B3.bool_stockorder_timer = False
-    #                 B3.bool_stockorder = False
+                if B3.init_marketday == 'Y':
+                    B3.market_to_excel()
+                    B3.bool_stockorder_timer = False
+                    B3.bool_stockorder = False
 
-    #             if datetime.datetime.today().weekday() == 6:
-    #                 B3.deadline_to_excel()
+                if datetime.datetime.today().weekday() == 6:
+                    B3.deadline_to_excel()
 
-    #             B3.bool_marketday = False
-    #             B3.bool_marketday_end = True
+                B3.bool_marketday = False
+                B3.bool_marketday_end = True
 
-    #             line_message(f'Stock End' if B3.init_marketday == 'Y' else 'Holiday End')
+                line_message(f'Stock End' if B3.init_marketday == 'Y' else 'Holiday End')
 
-    #     except Exception as e:
+        except Exception as e:
 
-    #         line_message(f"Bot3 Error : {e}")
-    #         break
+            line_message(f"Bot3 Error : {e}")
+            break
