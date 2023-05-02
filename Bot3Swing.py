@@ -177,6 +177,7 @@ class Bot3Swing():
                                 if sel_r['rt_cd'] == '0':
                                     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                     sel_lst.append({'c': '[S1] ' + code, 'r': round(_ror, 4)})
+                                    obj_lst[code]['s'] = sel_cnt + 1
 
                                     if is_qty_01:
                                         obj_lst.pop(code, None)
@@ -184,8 +185,6 @@ class Bot3Swing():
                                     msg = sel_r['msg1']
                                     print(f'{msg}')
 
-                                obj_lst[code]['s'] = sel_cnt + 1
-                            
                             elif (sel_cnt == 2) and (t2 <= los_dif):
 
                                 sel_r = self.bkk.create_market_sell_order(code, ord_qty_02) if tn < tn_153000 else self.bkk.create_over_sell_order(code, ord_qty_02)
@@ -194,14 +193,13 @@ class Bot3Swing():
                                 if sel_r['rt_cd'] == '0':
                                     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                     sel_lst.append({'c': '[S2] ' + code, 'r': round(_ror, 4)})
+                                    obj_lst[code]['s'] = sel_cnt + 1
 
                                     if is_qty_02:
                                         obj_lst.pop(code, None)
                                 else:
                                     msg = sel_r['msg1']
                                     print(f'{msg}')
-
-                                obj_lst[code]['s'] = sel_cnt + 1
 
                             elif (sel_cnt == 3) and (t3 <= los_dif):
                                     
@@ -211,11 +209,11 @@ class Bot3Swing():
                                 if sel_r['rt_cd'] == '0':
                                     print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                     sel_lst.append({'c': '[S3] ' + code, 'r': round(_ror, 4)})
+                                    obj_lst[code]['s'] = sel_cnt + 1
+                                    obj_lst.pop(code, None)
                                 else:
                                     msg = sel_r['msg1']
                                     print(f'{msg}')
-
-                                obj_lst.pop(code, None)
 
                         elif hp <= bal_pft:
 
@@ -225,11 +223,10 @@ class Bot3Swing():
                             if sel_r['rt_cd'] == '0':
                                 print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                 sel_lst.append({'c': '[S+] ' + code, 'r': round(_ror, 4)})
+                                obj_lst.pop(code, None)
                             else:
                                 msg = sel_r['msg1']
                                 print(f'{msg}')
-
-                            obj_lst.pop(code, None)
 
                         elif bal_pft <= ct:
 
@@ -239,11 +236,10 @@ class Bot3Swing():
                             if sel_r['rt_cd'] == '0':
                                 print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                 sel_lst.append({'c': '[S-] ' + code, 'r': round(_ror, 4)})
+                                obj_lst.pop(code, None)
                             else:
                                 msg = sel_r['msg1']
                                 print(f'{msg}')
-
-                            obj_lst.pop(code, None)
 
         save_file(FILE_URL_BLNC_3M, obj_lst)
 
