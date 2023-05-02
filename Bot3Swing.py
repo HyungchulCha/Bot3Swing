@@ -47,7 +47,7 @@ class Bot3Swing():
         self.r_l = list(set(self.get_balance_code_list()).difference(self.q_l))
 
         self.tot_evl_price = self.get_total_price()
-        self.buy_max_price = self.tot_evl_price / (len(self.q_l) * 1.5)
+        self.buy_max_price = self.tot_evl_price / (len(self.q_l) * 1.75)
         self.init_marketday = self.bkk.fetch_marketday()
 
         line_message(f'Bot3Swing \n평가금액 : {self.tot_evl_price}원, 다른종목: {len(self.r_l)}개')
@@ -435,7 +435,7 @@ if __name__ == '__main__':
 
     B3 = Bot3Swing()
     # 일주일에 한번
-    B3.deadline_to_excel()
+    # B3.deadline_to_excel()
     # B3.market_to_excel()
 
     while True:
