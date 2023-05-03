@@ -378,7 +378,7 @@ class Bot3Swing():
 if __name__ == '__main__':
 
     B3 = Bot3Swing()
-    B3.market_to_excel(False, True)
+    # B3.market_to_excel(False, True)
 
     while True:
 
