@@ -460,7 +460,6 @@ class Bot3Swing():
 if __name__ == '__main__':
 
     B3 = Bot3Swing()
-    # 일주일에 한번
     # B3.deadline_to_excel()
     # B3.market_to_excel()
 
