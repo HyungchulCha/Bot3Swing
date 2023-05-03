@@ -471,7 +471,7 @@ if __name__ == '__main__':
             t_090300 = t_n.replace(hour=9, minute=3, second=0)
             t_152500 = t_n.replace(hour=15, minute=25, second=0)
             t_153000 = t_n.replace(hour=15, minute=30, second=0)
-            t_180000 = t_n.replace(hour=18, minute=0, second=0)
+            t_200000 = t_n.replace(hour=20, minute=0, second=0)
 
             if t_n >= t_085000 and t_n <= t_153000 and B3.bool_marketday == False:
                 if os.path.isfile(os.getcwd() + '/token.dat'):
@@ -491,7 +491,7 @@ if __name__ == '__main__':
                     B3.stock_order()
                     B3.bool_stockorder = True
 
-            if t_n == t_180000 and B3.bool_marketday_end == False:
+            if t_n == t_200000 and B3.bool_marketday_end == False:
 
                 if B3.init_marketday == 'Y':
                     B3.deadline_to_excel()
