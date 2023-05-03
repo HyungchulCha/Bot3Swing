@@ -378,8 +378,7 @@ class Bot3Swing():
 if __name__ == '__main__':
 
     B3 = Bot3Swing()
-    # B3.deadline_to_excel()
-    # B3.market_to_excel()
+    B3.market_to_excel(False, True)
 
     while True:
 
@@ -413,8 +412,7 @@ if __name__ == '__main__':
             if t_n == t_200000 and B3.bool_marketday_end == False:
 
                 if B3.init_marketday == 'Y':
-                    B3.deadline_to_excel()
-                    B3.market_to_excel(True)
+                    B3.market_to_excel(True, True)
                     B3.bool_stockorder_timer = False
                     B3.bool_stockorder = False
 
