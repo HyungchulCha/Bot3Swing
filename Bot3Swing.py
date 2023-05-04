@@ -342,7 +342,10 @@ class Bot3Swing():
                 if len(fltr_list) > 0:
                     save_file(FILE_URL_SMBL_3M, fltr_list)
 
-            _code_list = list(set(self.get_guant_code_list() + self.get_balance_code_list()))
+            q_list = self.get_guant_code_list()
+            b_list = self.get_balance_code_list()
+
+            _code_list = list(set(q_list + b_list))
             
             df_a = []
             for c, code in enumerate(_code_list):
@@ -352,9 +355,10 @@ class Bot3Swing():
             df = df.loc[~df.index.duplicated(keep='last')]
 
             print('##################################################')
-            line_message(f'Bot3Swing Total Symbol Data: {len(_code_list)}개, \n{_code_list} \nFile Download Complete : {FILE_URL_DATA_3M}')
-            print(df)
             df.to_excel(FILE_URL_DATA_3M)
+            line_message(f'Bot3Swing \nQuant List: {len(q_list)}종목 \nBalance List: {len(b_list)}종목 \nTotal List: {len(_code_list)}개, \n{_code_list} \nFile Download Complete : {FILE_URL_DATA_3M}')
+            print(df)
+            
 
             _tn = datetime.datetime.now()
             _tn_div = _tn.minute % 3
