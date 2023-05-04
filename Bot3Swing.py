@@ -199,6 +199,7 @@ class Bot3Swing():
                                         print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                         sel_lst.append({'c': '[S1] ' + code, 'r': round(_ror, 4)})
                                         obj_lst[code]['s'] = sel_cnt + 1
+                                        obj_lst[code]['d'] = datetime.datetime.now().strftime('%Y%m%d')
 
                                         if is_qty_01:
                                             obj_lst.pop(code, None)
@@ -215,6 +216,7 @@ class Bot3Swing():
                                         print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                         sel_lst.append({'c': '[S2] ' + code, 'r': round(_ror, 4)})
                                         obj_lst[code]['s'] = sel_cnt + 1
+                                        obj_lst[code]['d'] = datetime.datetime.now().strftime('%Y%m%d')
 
                                         if is_qty_02:
                                             obj_lst.pop(code, None)
@@ -231,6 +233,7 @@ class Bot3Swing():
                                         print(f'매도 - 종목: {code}, 수익: {round(_ror, 4)}')
                                         sel_lst.append({'c': '[S3] ' + code, 'r': round(_ror, 4)})
                                         obj_lst[code]['s'] = sel_cnt + 1
+                                        obj_lst[code]['d'] = datetime.datetime.now().strftime('%Y%m%d')
                                         obj_lst.pop(code, None)
                                     else:
                                         msg = sel_r['msg1']
