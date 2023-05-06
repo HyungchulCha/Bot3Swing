@@ -430,13 +430,11 @@ class BotKIKr:
             m05_v = df['ma05'].iloc[-1]
             m20_v = df['ma20'].iloc[-1]
             m60_v = df['ma60'].iloc[-1]
-            vol_v = df['vol'].iloc[-1]
             vlm_v = df['vlm'].iloc[-1]
 
             if \
             (cls_v > 1000) and \
-            (vol_v > 250000) and \
-            (vlm_v > 250000000) and \
+            (vlm_v > 1000000000) and \
             (cls_v < (cls_p_v * 1.05)) and \
             (1.1 < hgt_v < 30) and \
             (m05_v > m20_v > m60_v) and \
