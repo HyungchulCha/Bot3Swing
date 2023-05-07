@@ -96,7 +96,7 @@ class Bot3Swing():
             chk_opn = float(min_lst[2]['stck_oprc'])
             chk_hig = max([float(min_lst[i]['stck_hgpr']) for i in range(3)])
             chk_low = min([float(min_lst[i]['stck_lwpr']) for i in range(3)])
-            chk_vol = sum([int(min_lst[i]['cntg_vol']) for i in range(3)])
+            chk_vol = sum([float(min_lst[i]['cntg_vol']) for i in range(3)])
             self.bdf.at[tn_df_idx, code] = str(chk_opn) + '|' + str(chk_hig) + '|' + str(chk_low) + '|' + str(chk_cls) + '|' + str(chk_vol)
 
             is_late = tn_div == 2
@@ -112,6 +112,9 @@ class Bot3Swing():
 
                 if not is_alread and (code in obj_lst):
                     obj_lst.pop(code, None)
+
+                if is_alread and (code in obj_lst) and (not ('d' in obj_lst[code])):
+                    obj_lst[code]['d'] = datetime.datetime.now().strftime('%Y%m%d')
                 
                 if (not is_alread) and (not is_remain):
                     
