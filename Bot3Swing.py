@@ -34,7 +34,7 @@ class Bot3Swing():
         self.bool_threshold = False
         self.bool_market = False
 
-        self.init_marketday = None
+        self.init_marketday = self.bkk.fetch_marketday()
         self.init_stockorder_timer = None
 
 
@@ -467,6 +467,7 @@ class Bot3Swing():
 if __name__ == '__main__':
 
     B3 = Bot3Swing()
+    # B3.deadline_symbol_list()
     # B3.market_to_excel()
 
     while True:
