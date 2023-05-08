@@ -43,7 +43,7 @@ class Bot3Swing():
         self.bkk = BotKIKr(self.key, self.secret, self.account, self.mock)
         self.init_marketday = self.bkk.fetch_marketday()
 
-        if self.bool_market == False:
+        if self.bool_market == False and self.init_marketday == 'Y':
 
             self.init_to_excel()
 
@@ -501,10 +501,10 @@ if __name__ == '__main__':
             if t_n == t_180000 and B3.bool_marketday_end == False:
 
                 if B3.init_marketday == 'Y':
+                    B3.deadline_symbol_list()
                     B3.bool_stockorder_timer = False
                     B3.bool_stockorder = False
-
-                B3.deadline_symbol_list()
+                
                 B3.bool_marketday = False
                 B3.bool_marketday_end = True
 
