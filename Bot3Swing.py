@@ -400,7 +400,7 @@ class Bot3Swing():
             _ttl_prc = int(self.bkk.fetch_balance()['output2'][0]['tot_evlu_amt'])
             _buy_cnt = 120
             
-            self.tot_evl_price = _ttl_prc if _ttl_prc < 45000000 else 45000000
+            self.tot_evl_price = _ttl_prc if _ttl_prc < 60000000 else 60000000
             self.buy_max_price = self.tot_evl_price / _buy_cnt
 
             self.bool_market = True
